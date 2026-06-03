@@ -50,7 +50,8 @@ capabilities:
       scope:
         tableScope:
           dbsToTables:
-            ice-cream-factory-db: [assets, timeseries]
+            ice-cream-factory-db:
+              tables: [assets]
   - sessionsAcl:
       actions: [LIST, CREATE, DELETE]
       scope:

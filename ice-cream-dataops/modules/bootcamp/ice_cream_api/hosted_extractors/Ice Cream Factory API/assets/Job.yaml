@@ -6,6 +6,6 @@ format:
   encoding: utf8
   mappingId: ICAPI Assets
 config:
-  interval: 1d
+  interval: 5m
   path: /site/all/csv
   method: get
