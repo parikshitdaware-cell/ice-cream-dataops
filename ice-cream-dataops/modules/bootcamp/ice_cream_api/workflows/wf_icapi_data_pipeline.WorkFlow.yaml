@@ -1,0 +1,2 @@
+externalId: wf_icapi_data_pipeline
+description: End-to-end data pipeline orchestration for the Ice Cream API asset, time series, and OEE data streams.
