@@ -23,9 +23,9 @@ jobs:
       image: cognite/toolkit:0.6.53  # Make sure the toolkit version matches the version in cdf.toml
     strategy:
       matrix:
-        environment:
-          - test
-          - prod
+        include:
+          # Deploy to 'test' environment automatically, only on push to main branch
+          - environment: ${{ inputs.environment != '' && inputs.environment || 'test' }}
 
     environment: ${{ matrix.environment }}
     env:
@@ -53,19 +53,10 @@ jobs:
       ICAPI_EXTRACTORS_SOURCE_ID: ${{ vars.ICAPI_EXTRACTORS_SOURCE_ID }}
 
     steps:
-      - name: Skip non-selected environment
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.environment != '' && inputs.environment != matrix.environment }}
-        run: |
-          echo "Skipping deployment for ${{ matrix.environment }}"
-          echo "Selected environment: ${{ inputs.environment }}"
       - uses: actions/checkout@v4
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
       - name: Verify and Update Toolkit Authorization
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
         run: yes | cdf auth verify
       - name: Build Toolkit Configurations
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
         run: cdf build --env=${{ matrix.environment }}
       - name: Deploy Toolkit Configurations
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
         run: cdf deploy --env=${{ matrix.environment }}
