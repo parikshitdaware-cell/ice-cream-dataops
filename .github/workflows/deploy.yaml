@@ -27,9 +27,9 @@ jobs:
           - test
           - prod
 
-    if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
     environment: ${{ matrix.environment }}
     env:
+      SELECTED_ENV: ${{ inputs.environment }}
       # Cognite Toolkit environment variables
       CDF_PROJECT: ${{ matrix.environment == 'prod' && 'prod-cdf-project' || 'test-cdf-project' }} # change <n> to your project number!
 
@@ -53,10 +53,19 @@ jobs:
       ICAPI_EXTRACTORS_SOURCE_ID: ${{ vars.ICAPI_EXTRACTORS_SOURCE_ID }}
 
     steps:
+      - name: Skip non-selected environment
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.environment != '' && inputs.environment != matrix.environment }}
+        run: |
+          echo "Skipping deployment for ${{ matrix.environment }}"
+          echo "Selected environment: ${{ inputs.environment }}"
       - uses: actions/checkout@v4
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
       - name: Verify and Update Toolkit Authorization
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
         run: yes | cdf auth verify
       - name: Build Toolkit Configurations
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
         run: cdf build --env=${{ matrix.environment }}
       - name: Deploy Toolkit Configurations
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
         run: cdf deploy --env=${{ matrix.environment }}
