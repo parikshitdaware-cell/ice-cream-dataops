@@ -29,7 +29,6 @@ jobs:
 
     environment: ${{ matrix.environment }}
     env:
-      SELECTED_ENV: ${{ inputs.environment }}
       # Cognite Toolkit environment variables
       CDF_PROJECT: ${{ matrix.environment == 'prod' && 'prod-cdf-project' || 'test-cdf-project' }} # change <n> to your project number!
 
