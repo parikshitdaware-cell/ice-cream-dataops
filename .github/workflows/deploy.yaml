@@ -23,10 +23,11 @@ jobs:
       image: cognite/toolkit:0.6.53  # Make sure the toolkit version matches the version in cdf.toml
     strategy:
       matrix:
-        include:
-          # Deploy to 'test' environment automatically, only on push to main branch
-          - environment: ${{ inputs.environment != '' && inputs.environment || 'test' }}
+        environment:
+          - test
+          - prod
 
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.environment == '' || inputs.environment == matrix.environment }}
     environment: ${{ matrix.environment }}
     env:
       # Cognite Toolkit environment variables
